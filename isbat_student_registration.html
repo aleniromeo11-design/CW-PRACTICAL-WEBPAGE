@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ISBAT University student registration coursework prototype.">
+  <title>ISBAT University | Student Registration</title>
+  <style>
+    /* ISBAT-inspired visual system: white surfaces, university red accents and restrained grey. */
+    :root {
+      --isbat-red: #a51f2b;
+      --isbat-red-dark: #811722;
+      --text: #292929;
+      --muted: #666;
+      --line: #dedede;
+      --soft: #f5f5f5;
+      --white: #fff;
+      --success: #176b45;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: #f3f3f3;
+      color: var(--text);
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,sans-serif;
+      font-weight: 400;
+      color:#333;
+      line-height: 1.6;
+    }
+    a { color: var(--isbat-red); }
+    a:visited { color: #76202a; }
+    a:hover { color: var(--isbat-red-dark); }
+    a:active { color: #5e111a; }
+    .top-strip { min-height: 32px; background: var(--isbat-red); color: #fff; font-size: .78rem; }
+    .top-strip-inner, .header-inner, .nav-inner, main, .footer-inner {
+      width: min(1120px, calc(100% - 36px)); margin: 0 auto;
+    }
+    .top-strip-inner { min-height: 32px; display: flex; align-items: center; justify-content: center; gap: 22px; }
+    .site-header { background: #fff; border-bottom: 1px solid #e7e7e7; }
+    .header-inner { min-height: 104px; display: flex; align-items: center; justify-content: space-between; gap: 60px; padding: 15px 0; }
+    .brand { display: flex; align-items: center; gap: 13px; text-decoration: none; }
+    .brand-mark { width: 64px; height: 64px; border: 2px solid var(--isbat-red); display: grid; place-items: center; color: var(--isbat-red); font-weight: 900; font-size: 1.15rem; letter-spacing: -1px; }
+    .brand-copy strong { display: block; color: var(--isbat-red); font-family: Georgia, 'Times New Roman', serif; font-size: 1.55rem; line-height: 1.05; letter-spacing: .3px; }
+    .brand-copy span { display: block; color: #555; font-size: .68rem; letter-spacing: .5px; margin-top: 5px; text-transform: uppercase; }
+    .header-note { text-align: right; color: #555; font-size: .83rem; }
+    .header-note strong { display: block; color: var(--isbat-red); font-size: .95rem; }
+    .main-nav { background: #fff; border-top: 1px solid #eee; border-bottom: 3px solid var(--isbat-red); }
+    .nav-inner { display: flex; align-items: center; flex-wrap: wrap; gap: 24px; min-height: 48px; }
+    .nav-inner a { display: inline-block; padding: 12px 19px; color: #333; text-decoration: none; font-size: .88rem; font-weight: 700; }
+    .nav-inner a:first-child, .nav-inner a:hover { color: var(--isbat-red); background: #faf4f4; }
+    .page-banner { background: #fff; border-bottom: 1px solid var(--line); }
+    .banner-inner { width: min(1120px, calc(100% - 36px)); margin: 0 auto; padding: 28px 0 25px; }
+    .breadcrumb { color: #777; font-size: .78rem; margin-bottom: 8px; }
+    .breadcrumb a { text-decoration: none; }
+    h1 { color: var(--isbat-red); font-size: clamp(1.7rem, 3vw, 2.35rem); margin: 0 0 5px; line-height: 1.2; }
+    .banner-inner p { margin: 0; color: #555; }
+    main { padding: 30px 0 48px; }
+    .intro { margin-bottom: 20px; }
+    .intro h2 { color: #333; font-size: 1.25rem; margin: 0 0 5px; }
+    .intro p { color: var(--muted); margin: 0; font-size: .92rem; }
+    .form-card { max-width: 900px; margin: 0 auto; background: #fff; border: 1px solid #e1e1e1; box-shadow: 0 5px 20px rgba(0,0,0,.055); }
+    .form-heading { background: var(--isbat-red); color: #fff; padding: 17px 24px; }
+    .form-heading h2 { margin: 0; font-size: 1.18rem; }
+    .form-heading p { margin: 3px 0 0; font-size: .84rem; opacity: .95; }
+    form { max-width: 700px; margin: 0 auto; padding: 25px 22px 28px; }
+    fieldset { border: 1px solid #d7d7d7; padding: 19px 18px 20px; margin: 0 0 20px; min-width: 0; background: #fff; }
+    legend { color: var(--isbat-red); font-weight: 700; padding: 0 9px; font-size: 1rem; }
+    .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 18px; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field.full { grid-column: 1 / -1; }
+    label, .group-label { font-size: .87rem; font-weight: 700; color: #333; }
+    input, select { width: 100%; min-height: 43px; padding: 10px 11px; border: 1px solid #cfcfcf; border-radius: 2px; background: #fff; color: #292929; font: inherit; font-size: .9rem; }
+    input:focus, select:focus { outline: 2px solid rgba(165,31,43,.2); border-color: var(--isbat-red); }
+    input::placeholder { color: #999; }
+    .choice-row { display: flex; flex-wrap: wrap; gap: 13px 25px; padding-top: 5px; }
+    .choice { display: inline-flex; align-items: center; gap: 8px; font-weight: 400; font-size: .9rem; }
+    .choice input { width: 16px; min-height: 16px; height: 16px; margin: 0; accent-color: var(--isbat-red); }
+    .course-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 18px; padding-top: 5px; }
+    .help { margin: 7px 0 0; color: #777; font-size: .78rem; }
+    .form-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 5px; }
+    button { border: 1px solid var(--isbat-red); padding: 11px 25px; min-height: 44px; font-size: .9rem; font-weight: 700; cursor: pointer; transition: background-color .2s ease, color .2s ease, transform .2s ease; }
+    .submit-btn { background: var(--isbat-red); color: #fff; }
+    .submit-btn:hover { background: var(--isbat-red-dark); transform: translateY(-1px); }
+    .reset-btn { background: #fff; color: var(--isbat-red); }
+    .reset-btn:hover { background: #f8eeee; }
+    .notice { display: none; margin-top: 17px; padding: 12px 14px; border-left: 4px solid var(--success); background: #edf7f1; color: #185c3c; font-size: .88rem; }
+    .site-footer { background: #fff; border-top: 4px solid var(--isbat-red); }
+    .footer-inner { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 22px; padding: 25px 0; }
+    .footer-inner h2 { color: var(--isbat-red); font-family: Georgia, 'Times New Roman', serif; font-size: 1.05rem; margin: 0 0 7px; }
+    .footer-inner p { color: #666; font-size: .82rem; margin: 3px 0; }
+    .footer-links { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start; }
+    .footer-links a { font-size: .82rem; text-decoration: none; }
+    .copyright { background: #f1f1f1; border-top: 1px solid #e1e1e1; text-align: center; padding: 11px 15px; color: #666; font-size: .76rem; }
+    @media (max-width: 650px) {
+      .header-inner { align-items: flex-start; }
+      .header-note { text-align: left; }
+      .nav-inner a { padding: 10px 12px; }
+      .form-grid, .course-list { grid-template-columns: 1fr; }
+      form { padding: 20px 14px; }
+      fieldset { padding: 16px 12px; }
+      .form-heading { padding: 15px 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-strip">
+    <div class="top-strip-inner">
+      <span>ISBAT University Student Registration Prototype</span>
+      <a href="https://www.isbatuniversity.ac.ug/enquiry/" target="_blank" rel="noopener">Contact</a>
+    </div>
+  </div>  
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="https://www.isbatuniversity.ac.ug/" aria-label="ISBAT University home">
+        <img src="ISBATLOGO11.jpeg" alt="ISBAT University Logo">
+        <span class="brand-copy">
+          <strong>ISBAT UNIVERSITY</strong>
+          <span>International Business, Science and Technology</span>
+        </span>
+      </a>
+      <div class="header-note">
+        <strong>Student Registration</strong>
+        Academic Services Portal
+      </div>
+    </div>
+  </header>
+
+  <nav class="main-nav" aria-label="Main navigation">
+    <div class="nav-inner">
+      <a href="https://www.isbatuniversity.ac.ug/">Home</a>
+      <a href="https://www.isbatuniversity.ac.ug/">Programmes</a>
+      <a href="#registration">Registration</a>
+      <a href="https://www.isbatuniversity.ac.ug/enquiry/">Contact</a>
+    </div>
+  </nav>
+
+  <section class="page-banner" aria-labelledby="page-title">
+    <div class="banner-inner">
+      <div class="breadcrumb"><a href="https://www.isbatuniversity.ac.ug/">Home</a> &gt; Student Services &gt; Registration</div>
+      <h1 id="page-title">Student Registration</h1>
+      <p>Welcome to ISBAT University. Complete the form below to register for your first-semester course units.</p>
+    </div>
+  </section>
+
+  <main id="registration">
+    <div class="intro">
+      <h2>New Student Registration Form</h2>
+      <p>Please provide accurate information. Fields marked with an asterisk (*) are mandatory.</p>
+    </div>
+
+    <section class="form-card" aria-label="Student registration form">
+      <div class="form-heading">
+        <h2>Student Details</h2>
+        <p>Personal information and first-semester programme selection</p>
+      </div>
+
+      <form id="studentForm" action="#" method="get">
+        <fieldset>
+          <legend>Personal Details</legend>
+          <div class="form-grid">
+            <div class="field full">
+              <label for="fullName">Full Name *</label>
+              <input type="text" id="fullName" name="fullName" placeholder="Enter your full name" autocomplete="name" required>
+            </div>
+            <div class="field">
+              <label for="studentId">Student ID *</label>
+              <input type="text" id="studentId" name="studentId" placeholder="e.g. ISBAT/2026/001" pattern="ISBAT/[0-9]{4}/[0-9]{3,5}" title="Use the format ISBAT/YYYY/ followed by 3 to 5 digits" required>
+            </div>
+            <div class="field">
+              <label for="email">Email Address *</label>
+              <input type="email" id="email" name="email" placeholder="name@example.com" autocomplete="email" required>
+            </div>
+            <div class="field">
+              <label for="phone">Phone Number *</label>
+              <input type="tel" id="phone" name="phone" placeholder="07XXXXXXXX" pattern="07[0-9]{8}" title="Enter a Ugandan mobile number beginning with 07 followed by 8 digits" inputmode="numeric" required>
+            </div>
+            <div class="field">
+              <label for="nationality">Nationality *</label>
+              <select id="nationality" name="nationality" required>
+                <option value="">Select nationality</option>
+                <option value="Uganda">Uganda</option>
+                <option value="Kenya">Kenya</option>
+                <option value="Tanzania">Tanzania</option>
+                <option value="Rwanda">Rwanda</option>
+                <option value="South Sudan">South Sudan</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="dateOfBirth">Date of Birth *</label>
+              <input type="date" id="dateOfBirth" name="dateOfBirth" required>
+            </div>
+            <div class="field full">
+              <span class="group-label">Gender *</span>
+              <div class="choice-row">
+                <label class="choice" for="male"><input type="radio" id="male" name="gender" value="Male" required> Male</label>
+                <label class="choice" for="female"><input type="radio" id="female" name="gender" value="Female"> Female</label>
+                <label class="choice" for="preferNot"><input type="radio" id="preferNot" name="gender" value="Prefer not to say"> Prefer not to say</label>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Programme Details</legend>
+          <div class="form-grid">
+            <div class="field full">
+              <label for="programme">Programme of Study *</label>
+              <select id="programme" name="programme" required>
+                <option value="">Select your programme</option>
+                <option value="BSc Applied Information Technology">B.Sc. Applied Information Technology</option>
+                <option value="BSc Computer Science">B.Sc. Computer Science</option>
+                <option value="BSc Networking and Cyber Security">B.Sc. Networking and Cyber Security</option>
+                <option value="BSc Artificial Intelligence and Machine Learning">B.Sc. Artificial Intelligence and Machine Learning</option>
+                <option value="BSc Computer Engineering">B.Sc. Computer Engineering</option>
+              </select>
+              <p class="help">Programme options are included for this coursework prototype; confirm current programme titles with the university.</p>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Course Units — First Semester</legend>
+          <span class="group-label">Select the course units you wish to register for (at least one) *</span>
+          <div class="course-list">
+            <label class="choice" for="unit1"><input type="checkbox" id="unit1" name="courseUnits" value="Computer Applications"> Computer Applications</label>
+            <label class="choice" for="unit2"><input type="checkbox" id="unit2" name="courseUnits" value="Communication Skills"> Communication Skills</label>
+            <label class="choice" for="unit3"><input type="checkbox" id="unit3" name="courseUnits" value="Mathematics for IT"> Mathematics for IT</label>
+            <label class="choice" for="unit4"><input type="checkbox" id="unit4" name="courseUnits" value="Introduction to Programming"> Introduction to Programming</label>
+            <label class="choice" for="unit5"><input type="checkbox" id="unit5" name="courseUnits" value="Computer Systems"> Computer Systems</label>
+            <label class="choice" for="unit6"><input type="checkbox" id="unit6" name="courseUnits" value="Introduction to Information Technology"> Introduction to Information Technology</label>
+          </div>
+          <p class="help">Course-unit titles are illustrative placeholders and should be checked against the official first-semester course list.</p>
+        </fieldset>
+
+        <div class="form-actions">
+          <button class="submit-btn" type="submit">Submit Registration</button>
+          <button class="reset-btn" type="reset">Reset Form</button>
+        </div>
+        <div class="notice" id="formNotice" role="status" aria-live="polite">Form checks passed. This coursework prototype does not save or transmit registration data.</div>
+      </form>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <h2>ISBAT UNIVERSITY</h2>
+        <p>Plot 11A, Rotary Avenue, Lugogo Bypass, Kololo, Kampala, Uganda.</p>
+        <p>Tel: +256 414 237 524/5/6 | Email: info@isbatuniversity.com</p>
+      </div>
+      <nav class="footer-links" aria-label="Footer navigation">
+        <a href="https://www.isbatuniversity.ac.ug/">Home</a>
+        <a href="https://www.isbatuniversity.ac.ug/">Programmes</a>
+        <a href="https://www.isbatuniversity.ac.ug/enquiry/">Contact</a>
+      </nav>
+    </div>
+    <div class="copyright">&copy; 2026 ISBAT University. Coursework prototype. Registration No:012250209 .</div>
+  </footer>
+
+  <script>
+    /* Demonstration only: checks that at least one course unit is selected. */
+    const studentForm = document.getElementById('studentForm');
+    const formNotice = document.getElementById('formNotice');
+    studentForm.addEventListener('submit', function (event) {
+      event.preventDefault();
+      const selectedUnits = studentForm.querySelectorAll('input[name="courseUnits"]:checked');
+      if (selectedUnits.length === 0) {
+        alert('Please select at least one course unit.');
+        return;
+      }
+      formNotice.style.display = 'block';
+      formNotice.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+    studentForm.addEventListener('reset', function () {
+      formNotice.style.display = 'none';
+    });
+  </script>
+</body>
+</html>
